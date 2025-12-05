@@ -1,0 +1,29 @@
+@import "tailwindcss";
+@import url('/fonts/pixel-font.css');
+
+@theme {
+  /* Teletext Color Palette */
+  --color-teletext-bg: #080808;
+  --color-teletext-primary: #E6D8B0;
+  --color-teletext-orange: #FF8C00;
+  --color-teletext-green: #00FF00;
+  --color-teletext-red: #FF0000;
+  --color-teletext-cyan: #00FFFF;
+  --color-teletext-yellow: #FFFF00;
+  --color-teletext-magenta: #FF00FF;
+  --color-teletext-blue: #0000FF;
+  --color-teletext-white: #FFFFFF;
+}
+
+/* Base styles */
+body {
+  background-color: var(--color-teletext-bg);
+  color: var(--color-teletext-primary);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}

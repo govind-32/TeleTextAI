@@ -1,0 +1,334 @@
+/* TeletextViewport Styles */
+
+/* ============================================
+   RESPONSIVE LAYOUT
+   Requirements: 11.1, 11.2, 11.3
+   ============================================ */
+
+/* Base viewport dimensions */
+:root {
+  --teletext-cols: 40;
+  --teletext-rows: 25;
+  --teletext-cell-width: 16px;
+  --teletext-cell-height: 24px;
+  --teletext-viewport-width: calc(var(--teletext-cols) * var(--teletext-cell-width));
+  --teletext-viewport-height: calc(var(--teletext-rows) * var(--teletext-cell-height));
+}
+
+.teletext-viewport-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #000;
+  position: relative;
+}
+
+/* Small screen message - hidden by default */
+.teletext-small-screen-message {
+  display: none;
+}
+
+/* Viewport wrapper for scaling */
+.teletext-viewport-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.teletext-viewport {
+  /* Base teletext colors */
+  background-color: var(--color-teletext-bg, #080808);
+  color: var(--color-teletext-primary, #E6D8B0);
+  
+  /* Pixel font styling */
+  font-family: var(--font-teletext, 'VT323', monospace);
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: 0;
+  
+  /* Pixel-perfect rendering */
+  image-rendering: pixelated;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Border styling like classic teletext */
+  border: 4px solid #333;
+  box-shadow: 
+    0 0 20px rgba(230, 216, 176, 0.1),
+    inset 0 0 60px rgba(0, 0, 0, 0.5);
+  
+  /* Fixed viewport size - 40 cols x 25 rows */
+  width: var(--teletext-viewport-width);
+  height: var(--teletext-viewport-height);
+  
+  /* CSS Grid for character cells */
+  display: grid;
+  grid-template-columns: repeat(var(--teletext-cols), 1fr);
+  grid-template-rows: repeat(var(--teletext-rows), 1fr);
+  
+  /* Container styling */
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+  
+  /* Transform origin for scaling */
+  transform-origin: center center;
+}
+
+.teletext-content {
+  /* Ensure content fills the viewport */
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ============================================
+   BREAKPOINT: Large screens (1024px+)
+   Full size viewport - Requirements: 11.1
+   ============================================ */
+@media (min-width: 1024px) {
+  .teletext-viewport-wrapper {
+    transform: scale(1);
+  }
+  
+  .teletext-small-screen-message {
+    display: none;
+  }
+}
+
+/* ============================================
+   BREAKPOINT: Medium screens (768px - 1023px)
+   Proportional scaling - Requirements: 11.2
+   Uses stepped scaling for better browser compatibility
+   ============================================ */
+
+/* 768px - 849px: Scale to 0.80 */
+@media (min-width: 768px) and (max-width: 849px) {
+  .teletext-viewport-wrapper {
+    transform: scale(0.80);
+  }
+  
+  .teletext-small-screen-message {
+    display: none;
+  }
+}
+
+/* 850px - 949px: Scale to 0.88 */
+@media (min-width: 850px) and (max-width: 949px) {
+  .teletext-viewport-wrapper {
+    transform: scale(0.88);
+  }
+  
+  .teletext-small-screen-message {
+    display: none;
+  }
+}
+
+/* 950px - 1023px: Scale to 0.95 */
+@media (min-width: 950px) and (max-width: 1023px) {
+  .teletext-viewport-wrapper {
+    transform: scale(0.95);
+  }
+  
+  .teletext-small-screen-message {
+    display: none;
+  }
+}
+
+/* ============================================
+   BREAKPOINT: Small screens (below 768px)
+   Show message, hide viewport - Requirements: 11.3
+   ============================================ */
+@media (max-width: 767px) {
+  .teletext-viewport-wrapper {
+    display: none;
+  }
+  
+  .teletext-small-screen-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .small-screen-content {
+    background-color: var(--color-teletext-bg, #080808);
+    border: 4px solid var(--color-teletext-cyan, #00FFFF);
+    padding: 40px 30px;
+    max-width: 320px;
+    font-family: var(--font-teletext, 'VT323', monospace);
+  }
+  
+  .small-screen-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+  
+  .small-screen-content h2 {
+    color: var(--color-teletext-cyan, #00FFFF);
+    font-size: 24px;
+    margin: 0 0 20px 0;
+    letter-spacing: 2px;
+  }
+  
+  .small-screen-content p {
+    color: var(--color-teletext-primary, #E6D8B0);
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0 0 16px 0;
+  }
+  
+  .small-screen-hint {
+    color: var(--color-teletext-orange, #FF8C00);
+    font-size: 14px;
+  }
+}
+
+/* Character cell styling */
+.teletext-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 24px;
+}
+
+/* Teletext color classes */
+.text-teletext-bg { color: var(--color-teletext-bg); }
+.text-teletext-primary { color: var(--color-teletext-primary); }
+.text-teletext-orange { color: var(--color-teletext-orange); }
+.text-teletext-green { color: var(--color-teletext-green); }
+.text-teletext-red { color: var(--color-teletext-red); }
+.text-teletext-cyan { color: var(--color-teletext-cyan); }
+.text-teletext-yellow { color: var(--color-teletext-yellow); }
+.text-teletext-magenta { color: var(--color-teletext-magenta); }
+.text-teletext-blue { color: var(--color-teletext-blue); }
+.text-teletext-white { color: var(--color-teletext-white); }
+
+.bg-teletext-bg { background-color: var(--color-teletext-bg); }
+.bg-teletext-primary { background-color: var(--color-teletext-primary); }
+.bg-teletext-orange { background-color: var(--color-teletext-orange); }
+.bg-teletext-green { background-color: var(--color-teletext-green); }
+.bg-teletext-red { background-color: var(--color-teletext-red); }
+.bg-teletext-cyan { background-color: var(--color-teletext-cyan); }
+.bg-teletext-yellow { background-color: var(--color-teletext-yellow); }
+.bg-teletext-magenta { background-color: var(--color-teletext-magenta); }
+.bg-teletext-blue { background-color: var(--color-teletext-blue); }
+.bg-teletext-white { background-color: var(--color-teletext-white); }
+
+/* Blinking text animation */
+@keyframes teletext-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.teletext-blink {
+  animation: teletext-blink 1s step-end infinite;
+}
+
+/* ============================================
+   ACCESSIBILITY - Keyboard Focus Styles
+   Requirements: 10.1, 10.2, 10.3
+   ============================================ */
+
+/* Focus indicator animation */
+@keyframes teletext-focus-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 2px var(--color-teletext-cyan),
+                0 0 8px var(--color-teletext-cyan);
+  }
+  50% { 
+    box-shadow: 0 0 0 2px var(--color-teletext-cyan),
+                0 0 16px var(--color-teletext-cyan);
+  }
+}
+
+/* Base focus styles for all focusable elements */
+.teletext-viewport button:focus,
+.teletext-viewport input:focus,
+.teletext-viewport select:focus,
+.teletext-viewport textarea:focus,
+.teletext-viewport a:focus,
+.teletext-viewport [tabindex]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-teletext-cyan),
+              0 0 8px var(--color-teletext-cyan);
+  animation: teletext-focus-pulse 1.5s ease-in-out infinite;
+}
+
+/* Focus-visible for keyboard-only focus indication */
+.teletext-viewport button:focus-visible,
+.teletext-viewport input:focus-visible,
+.teletext-viewport select:focus-visible,
+.teletext-viewport textarea:focus-visible,
+.teletext-viewport a:focus-visible,
+.teletext-viewport [tabindex]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-teletext-cyan),
+              0 0 8px var(--color-teletext-cyan);
+  animation: teletext-focus-pulse 1.5s ease-in-out infinite;
+}
+
+/* Remove default focus outline */
+.teletext-viewport *:focus {
+  outline: none;
+}
+
+/* Teletext-styled focusable button class */
+.teletext-focusable {
+  transition: all 0.15s ease;
+}
+
+.teletext-focusable:focus,
+.teletext-focusable:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-teletext-cyan),
+              0 0 8px var(--color-teletext-cyan);
+  animation: teletext-focus-pulse 1.5s ease-in-out infinite;
+}
+
+/* Input field focus styles */
+.teletext-input:focus,
+.teletext-input:focus-visible {
+  outline: none;
+  border-color: var(--color-teletext-cyan) !important;
+  box-shadow: 0 0 0 1px var(--color-teletext-cyan),
+              0 0 8px var(--color-teletext-cyan),
+              inset 0 0 4px rgba(0, 255, 255, 0.2);
+  animation: teletext-focus-pulse 1.5s ease-in-out infinite;
+}
+
+/* Range slider focus styles */
+.teletext-slider:focus,
+.teletext-slider:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-teletext-cyan),
+              0 0 8px var(--color-teletext-cyan);
+}
+
+/* Skip link for accessibility */
+.teletext-skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-teletext-cyan);
+  color: var(--color-teletext-bg);
+  padding: 8px 16px;
+  z-index: 100;
+  transition: top 0.3s;
+  font-family: inherit;
+  text-decoration: none;
+}
+
+.teletext-skip-link:focus {
+  top: 0;
+}

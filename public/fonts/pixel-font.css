@@ -1,0 +1,11 @@
+/* Pixel/Bitmap Monospace Font for Teletext */
+/* Using Press Start 2P from Google Fonts as a pixel font alternative */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* VT323 as a more readable teletext-style font */
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+:root {
+  --font-teletext: 'VT323', monospace;
+  --font-pixel: 'Press Start 2P', monospace;
+}
