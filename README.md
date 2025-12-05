@@ -2,13 +2,12 @@
 
 Use this in your **Devpost “Built With” + Project Page Description”** or as your GitHub README optimized for hackathon judges.
 
----
 
 # 📺 **Teletext Universe**
 
 ### *A forgotten technology, resurrected with AI.*
 
----
+
 
 ## 🧠 **What It Does**
 
@@ -23,7 +22,7 @@ Users can type classic teletext page numbers to access:
 
 All rendered on a fully recreated CRT-style interface.
 
----
+
 
 ## 💡 **Inspiration**
 
@@ -35,7 +34,7 @@ When exploring Kiroween’s *Resurrection* theme, the question became:
 
 Teletext Universe is the answer: a blend of nostalgia and intelligence.
 
----
+
 
 ## 🛠️ **How I Built It**
 
@@ -66,7 +65,7 @@ This kept the project stable, clean, and consistent.
 A structured visual spec ensured every Kiro output matched the teletext theme —
 colors, spacing, CRT effects, typography, interaction rules.
 
----
+
 
 ## 🧩 **Tech Stack**
 
@@ -75,7 +74,7 @@ colors, spacing, CRT effects, typography, interaction rules.
 **APIs:** Google Gemini 1.5 Flash, WeatherAPI.com
 **Tools:** Kiro, GitHub, Figma-ready SVG generation
 
----
+
 
 ## ✨ **Key Features**
 
@@ -100,7 +99,7 @@ Ask anything — responses appear in crisp retro teletext rows.
 Scanlines, glow, vignette, glitch slices, pixel fonts, page buffering —
 all recreated to mimic real teletext broadcasts.
 
----
+
 
 ## 🚀 **Challenges**
 
@@ -108,7 +107,7 @@ all recreated to mimic real teletext broadcasts.
 * Formatting LLM outputs into strict teletext row constraints
 * Building accurate numeric page navigation logic (buffered input)
 
----
+
 
 ## 🎉 **What I’m Proud Of**
 
@@ -116,7 +115,7 @@ all recreated to mimic real teletext broadcasts.
 * AI features integrated seamlessly into a retro interface
 * Teletext “resurrected” using only free developer tools
 
----
+
 
 ## 📣 **What’s Next**
 
@@ -125,7 +124,7 @@ all recreated to mimic real teletext broadcasts.
 * On-device LLM via Gemini Nano
 * User-generated teletext pages
 
----
+
 
 ## 📜 **License**
 
