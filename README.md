@@ -1,5 +1,3 @@
----
-
 # ✅ **1. DEVPOST-READY README (Highly Polished)**
 
 Use this in your **Devpost “Built With” + Project Page Description”** or as your GitHub README optimized for hackathon judges.
@@ -108,14 +106,12 @@ all recreated to mimic real teletext broadcasts.
 
 * Recreating realistic CRT distortion in CSS/SVG
 * Formatting LLM outputs into strict teletext row constraints
-* Debugging Weather API 401 errors in serverless deployment
 * Building accurate numeric page navigation logic (buffered input)
 
 ---
 
 ## 🎉 **What I’m Proud Of**
 
-* The entire project was built **in one day with Kiro**
 * Authentic CRT look with modern web tech
 * AI features integrated seamlessly into a retro interface
 * Teletext “resurrected” using only free developer tools
