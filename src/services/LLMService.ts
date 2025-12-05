@@ -2,22 +2,90 @@ import type { ApiResult, Headline, PixelArtGrid, ChatMessage, AssistantResponse 
 import cacheService from './CacheService';
 
 /**
- * LLMService - Handles OpenAI API interactions
+ * LLMService - Handles OpenAI and Gemini API interactions
  * Requirements: 4.1, 7.2, 8.2
  */
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const HEADLINES_CACHE_TTL = 10; // minutes
 
-function getApiKey(): string {
+type LLMProvider = 'openai' | 'gemini';
+
+function getOpenAIKey(): string {
   return import.meta.env.VITE_OPENAI_API_KEY || '';
+}
+
+function getGeminiKey(): string {
+  return import.meta.env.VITE_GEMINI_API_KEY || '';
+}
+
+function getActiveProvider(): LLMProvider {
+  // Prefer Gemini if key is available, otherwise fall back to OpenAI
+  if (getGeminiKey()) return 'gemini';
+  if (getOpenAIKey()) return 'openai';
+  return 'gemini'; // Default to Gemini
+}
+
+async function callGemini(
+  messages: { role: string; content: string }[],
+  _maxTokens: number = 1000
+): Promise<string> {
+  const apiKey = getGeminiKey();
+  if (!apiKey) {
+    throw new Error('Gemini API key not configured');
+  }
+
+  // Convert OpenAI-style messages to Gemini format
+  const systemMessage = messages.find(m => m.role === 'system');
+  const userMessages = messages.filter(m => m.role !== 'system');
+  
+  const contents = userMessages.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
+
+  // Prepend system instruction to first user message if exists
+  if (systemMessage && contents.length > 0) {
+    contents[0].parts[0].text = `${systemMessage.content}\n\n${contents[0].parts[0].text}`;
+  }
+
+  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents,
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: _maxTokens,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(`Gemini API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+  }
+
+  const data = await response.json();
+  let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  
+  // Strip markdown code blocks if present (Gemini often wraps JSON in ```json ... ```)
+  text = text.trim();
+  if (text.startsWith('```')) {
+    text = text.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
+  }
+  
+  return text;
 }
 
 async function callOpenAI(
   messages: { role: string; content: string }[],
   maxTokens: number = 1000
 ): Promise<string> {
-  const apiKey = getApiKey();
+  const apiKey = getOpenAIKey();
   if (!apiKey) {
     throw new Error('OpenAI API key not configured');
   }
@@ -42,6 +110,18 @@ async function callOpenAI(
 
   const data = await response.json();
   return data.choices[0]?.message?.content || '';
+}
+
+async function callLLM(
+  messages: { role: string; content: string }[],
+  maxTokens: number = 1000
+): Promise<string> {
+  const provider = getActiveProvider();
+  
+  if (provider === 'gemini') {
+    return callGemini(messages, maxTokens);
+  }
+  return callOpenAI(messages, maxTokens);
 }
 
 
@@ -69,7 +149,7 @@ Return as JSON array: [{"title": "...", "snippet": "...", "source": "..."}]
 Content:
 ${rawContent}`;
 
-    const response = await callOpenAI([
+    const response = await callLLM([
       { role: 'system', content: 'You are a news summarizer. Return only valid JSON.' },
       { role: 'user', content: prompt },
     ]);
@@ -96,10 +176,10 @@ Return ONLY a JSON object with a "pixels" property containing an 8x8 array of he
 Use the teletext color palette: #080808 (black), #E6D8B0 (cream), #FF6B35 (orange), #4CAF50 (green), #F44336 (red), #00BCD4 (cyan), #FFEB3B (yellow), #E91E63 (magenta), #2196F3 (blue), #FFFFFF (white).
 Example format: {"pixels": [["#FF6B35", "#080808", ...], ...]}`;
 
-    const response = await callOpenAI([
+    const response = await callLLM([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: `Create pixel art of: ${prompt}` },
-    ], 500);
+    ], 1500);
 
     const parsed = JSON.parse(response);
     
@@ -134,7 +214,7 @@ export async function chat(
   try {
     const systemPrompt = `You are a helpful teletext-style assistant. Keep responses concise (under 200 characters per paragraph).
 After your response, suggest 2-3 follow-up questions the user might ask.
-Return JSON: {"message": "your response", "suggestions": ["question 1", "question 2", "question 3"]}`;
+You MUST return ONLY valid JSON in this exact format, no other text: {"message": "your response", "suggestions": ["question 1", "question 2", "question 3"]}`;
 
     const messages = [
       { role: 'system', content: systemPrompt },
@@ -142,8 +222,16 @@ Return JSON: {"message": "your response", "suggestions": ["question 1", "questio
       { role: 'user', content: message },
     ];
 
-    const response = await callOpenAI(messages, 800);
-    const parsed = JSON.parse(response);
+    const response = await callLLM(messages, 800);
+    
+    // Try to parse as JSON, fall back to plain text response
+    let parsed: { message?: string; suggestions?: string[] };
+    try {
+      parsed = JSON.parse(response);
+    } catch {
+      // If not valid JSON, use the response as the message directly
+      parsed = { message: response, suggestions: [] };
+    }
 
     // Ensure suggestions array has 2-3 items
     const suggestions = Array.isArray(parsed.suggestions) 
